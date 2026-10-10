@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Archive.today Link Detector — Wikipedia Reference Audit</title>
+<title>Archive.today‑länksdetektor — Granskning av Wikipedia‑referenser</title>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -574,9 +574,9 @@ function ResultsView({results,done,showOnlyAffected=false}){
         <div style={{background:C.blueSoft,border:`1px solid ${C.blueBorder}`,borderRadius:C.radius,padding:"16px 20px",marginBottom:16}}>
           <div style={{fontWeight:700,marginBottom:8,display:"flex",alignItems:"center",gap:6,fontSize:13,color:C.blue}}><EditIcon/> How to fix articles (Assisted Validation)</div>
           <div style={{color:C.textSec,fontSize:12,lineHeight:1.8}}>
-            <strong>1.</strong> Click the green <strong>Wayback Machine</strong> links to verify the snapshot. Wait 5 seconds.<br/>
-            <strong>2.</strong> Click the <strong>Verified</strong> button next to each link to stage your fix.<br/>
-            <strong>3.</strong> Click <strong style={{color:C.accent}}>Push Verified Archives to Wikipedia</strong> to open the editor with your verified changes pre-applied.
+            <strong>1.</strong> Klicka på de gröna <strong>Wayback Machine</strong>-länkarna för att verifiera ögonblicksbilden. Vänta i 5 sekunder.<br/>
+            <strong>2.</strong> Klicka på den <strong>Verified</strong>‑knappen bredvid varje länk för att förbereda din korrigering.<br/>
+            <strong>3.</strong> Klicka <strong style={{color:C.accent}}>Skicka verifierade arkiv till Wikipedia</strong> för att öppna redigeraren med dina verifierade ändringar förifyllda.
           </div>
         </div>
       )}
@@ -592,20 +592,20 @@ function ResultsView({results,done,showOnlyAffected=false}){
         {showOnlyAffected ? (
           <React.Fragment>
             <button onClick={()=>setFilter("all")} style={{padding:"6px 16px",borderRadius:"999px",border:`1px solid ${filter==="all"?C.accent:C.cardBorder}`,cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:C.sans,background:filter==="all"?C.accentSoft:C.card,color:filter==="all"?C.accent:C.muted}}>
-              All affected ({affected.length})
+              Alla berörda ({affected.length})
             </button>
             {fixable.length > 0 && (
               <button onClick={()=>setFilter("fixable")} style={{padding:"6px 16px",borderRadius:"999px",border:`1px solid ${filter==="fixable"?C.green:C.cardBorder}`,cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:C.sans,background:filter==="fixable"?"rgba(46,125,91,0.08)":C.card,color:filter==="fixable"?C.green:C.muted}}>
-                ✓ Fixable ({fixable.length})
+                ✓ Åtgärdbart ({fixable.length})
               </button>
             )}
             {unfixable.length > 0 && (
               <button onClick={()=>setFilter("unfixable")} style={{padding:"6px 16px",borderRadius:"999px",border:`1px solid ${filter==="unfixable"?C.red:C.cardBorder}`,cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:C.sans,background:filter==="unfixable"?C.redSoft:C.card,color:filter==="unfixable"?C.red:C.muted}}>
-                ✗ No alternative ({unfixable.length})
+                ✗ Inget alternativ ({unfixable.length})
               </button>
             )}
             <button onClick={()=>setFilter("clean")} style={{padding:"6px 16px",borderRadius:"999px",border:`1px solid ${filter==="clean"?C.accent:C.cardBorder}`,cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:C.sans,background:filter==="clean"?C.accentSoft:C.card,color:filter==="clean"?C.accent:C.muted}}>
-              Clean ({clean.length})
+              Rengöra ({clean.length})
             </button>
           </React.Fragment>
         ) : (
@@ -624,7 +624,7 @@ function ResultsView({results,done,showOnlyAffected=false}){
               {art.title}
             </a>
             <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
-              {art.error?(<Pill variant="red">API Error: {art.error}</Pill>):art.links.length>0?(<React.Fragment><Pill variant="red">{art.links.length} archive.today</Pill>{art.links.filter(l=>l.waybackUrl).length>0&&<Pill variant="green">{art.links.filter(l=>l.waybackUrl).length} alt{art.links.filter(l=>l.waybackUrl).length>1?"s":""}</Pill>}</React.Fragment>):(<Pill variant="green">Clean</Pill>)}
+              {art.error?(<Pill variant="red">API‑fel: {art.error}</Pill>):art.links.length>0?(<React.Fragment><Pill variant="red">{art.links.length} archive.today</Pill>{art.links.filter(l=>l.waybackUrl).length>0&&<Pill variant="green">{art.links.filter(l=>l.waybackUrl).length} alt{art.links.filter(l=>l.waybackUrl).length>1?"s":""}</Pill>}</React.Fragment>):(<Pill variant="green">Clean</Pill>)}
             </div>
           </div>
 
@@ -648,9 +648,9 @@ function ResultsView({results,done,showOnlyAffected=false}){
               }}
                 onMouseEnter={e=>e.currentTarget.style.background=C.accentHover} onMouseLeave={e=>e.currentTarget.style.background=C.accent}
                 style={{display:"inline-flex",alignItems:"center",gap:6,padding:"8px 16px",borderRadius:C.radiusSm,border:"none",background:C.accent,color:"#fff",fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:C.sans,boxShadow:C.shadow}}>
-                <EditIcon/> Push Verified Archives to Wikipedia
+                <EditIcon/> Skicka verifierade arkiv till Wikipedia
               </button>
-              <span style={{fontSize:11,color:C.mutedLight}}>Opens editor with pre-applied fixes</span>
+              <span style={{fontSize:11,color:C.mutedLight}}>Öppnar redigeraren med förapplicerade korrigeringar.</span>
             </div>
           )}
 
@@ -669,7 +669,7 @@ function ResultsView({results,done,showOnlyAffected=false}){
                       {lk.waybackUrl && (
                         <div style={{marginTop: 4}}>
                           <button 
-                            title="Verify new archive URL before selecting"
+                            title="Verifiera den nya arkiv‑URL:en innan du väljer."
                             disabled={lState.stage < 2}
                             onClick={()=>toggleQueue(id)}
                             style={{
@@ -690,7 +690,7 @@ function ResultsView({results,done,showOnlyAffected=false}){
                         </div>
                       )}
                       <div>
-                        <div style={{fontSize:10,color:C.muted,fontFamily:C.mono,marginBottom:4,textTransform:"uppercase",letterSpacing:"0.04em",fontWeight:500}}>Archive.today link #{li+1}</div>
+                        <div style={{fontSize:10,color:C.muted,fontFamily:C.mono,marginBottom:4,textTransform:"uppercase",letterSpacing:"0.04em",fontWeight:500}}>Archive.today länk #{li+1}</div>
                         <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
                           <a href={lk.archiveUrl} target="_blank" rel="noopener noreferrer" style={{color:C.red,fontSize:12,wordBreak:"break-all",fontFamily:C.mono,fontWeight:500, textDecoration: lState.stage === 3 ? "line-through" : "none"}}>{lk.archiveUrl}</a>
                           <CopyButton text={lk.archiveUrl} label="Copy old URL"/>
@@ -698,16 +698,16 @@ function ResultsView({results,done,showOnlyAffected=false}){
                         {lk.originalUrl&&(<div style={{marginTop:6}}><span style={{color:C.mutedLight,fontSize:10,fontFamily:C.mono}}>Original → </span><a href={lk.originalUrl} target="_blank" rel="noopener noreferrer" style={{color:C.muted,fontSize:11,wordBreak:"break-all",fontFamily:C.mono}}>{lk.originalUrl}</a></div>)}
                       </div>
                     </div>
-                    {lk.status==="pending"?<Pill variant="amber">Pending</Pill>:lk.status==="found"?<Pill variant="green">Alt found</Pill>:lk.status==="notfound"?<Pill variant="red">No alt</Pill>:<Pill variant="muted">Can't extract</Pill>}
+                    {lk.status==="pending"?<Pill variant="amber">Väntande</Pill>:lk.status==="found"?<Pill variant="green">Alternativ funnet</Pill>:lk.status==="notfound"?<Pill variant="red">Igen alternativ</Pill>:<Pill variant="muted">Kan inte extrahera</Pill>}
                   </div>
                   {lk.waybackUrl&&(
                     <div style={{marginTop:10,padding:"10px 14px",background:C.greenSoft,borderRadius:C.radiusSm,border:`1px solid ${C.greenBorder}`,opacity:lState.stage === 3?0.5:1,transition:"opacity 0.2s"}}>
                       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:6}}>
                         <div style={{flex:1,minWidth:0}}>
                           <div style={{fontSize:10,color:C.green,fontWeight:600,marginBottom:4,textTransform:"uppercase",letterSpacing:"0.04em"}}>
-                            Wayback Machine alternative
+                            Wayback Machine alternativ
                             {!lState.editMode && lState.stage !== 3 && (
-                                <span onClick={()=>setLinkStates(p=>({...p, [id]: {...p[id], editMode:true}}))} style={{cursor:"pointer", marginLeft:8, fontSize:10, color:C.accent, textTransform:"none"}}>✏️ Edit</span>
+                                <span onClick={()=>setLinkStates(p=>({...p, [id]: {...p[id], editMode:true}}))} style={{cursor:"pointer", marginLeft:8, fontSize:10, color:C.accent, textTransform:"none"}}>✏️ Redigera</span>
                             )}
                           </div>
                           
@@ -732,16 +732,16 @@ function ResultsView({results,done,showOnlyAffected=false}){
                           )}
 
                         </div>
-                        <CopyButton text={displayUrl} label="Copy new URL" variant="green"/>
+                        <CopyButton text={displayUrl} label="Kopiera ny URL" variant="green"/>
                       </div>
                       {displayDate&&(
                         <div style={{marginTop:8,paddingTop:8,borderTop:`1px solid ${C.greenBorder}`,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:6}}>
                           <div>
-                            <span style={{fontSize:10,color:C.green,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.04em"}}>Archive-date → </span>
+                            <span style={{fontSize:10,color:C.green,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.04em"}}>Archivdätem → </span>
                             <code style={{fontSize:12,color:C.green,fontFamily:C.mono,fontWeight:600,background:"rgba(46,125,91,0.1)",padding:"2px 6px",borderRadius:4}}>{displayDate}</code>
-                            <span style={{fontSize:10,color:C.muted,marginLeft:6}}>Will map to <code style={{fontSize:10,fontFamily:C.mono}}>|archive-date=</code></span>
+                            <span style={{fontSize:10,color:C.muted,marginLeft:6}}>Kommer att mappas till <code style={{fontSize:10,fontFamily:C.mono}}>|archivdätem=</code></span>
                           </div>
-                          <CopyButton text={displayDate} label="Copy date" variant="green"/>
+                          <CopyButton text={displayDate} label="Kopiera datum" variant="green"/>
                         </div>
                       )}
                       {lState.stage === 3 && (
@@ -758,7 +758,7 @@ function ResultsView({results,done,showOnlyAffected=false}){
                             onMouseEnter={e=>e.currentTarget.style.background=C.accentHover}
                             onMouseLeave={e=>e.currentTarget.style.background=C.accent}
                             style={{display:"inline-flex",alignItems:"center",gap:6,padding:"6px 12px",borderRadius:C.radiusSm,border:"none",background:C.accent,color:"#fff",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:C.sans}}>
-                            <EditIcon/> Fix this link on Wikipedia
+                            <EditIcon/> Åtgärda denna länk på Wikipedia
                           </button>
                         </div>
                       )}
@@ -780,7 +780,7 @@ function ArticleTab(){
   const go=()=>{if(input.trim())engine.scanArticles([input.trim()])};
   return(
     <React.Fragment>
-      <AutocompleteInput placeholder="Search for a Wikipedia article…" value={input} onChange={setInput} onGo={go} loading={engine.loading} onStop={engine.stop} searchFn={searchArticles}/>
+      <AutocompleteInput placeholder="Sök efter en Wikipedia‑artikel…" value={input} onChange={setInput} onGo={go} loading={engine.loading} onStop={engine.stop} searchFn={searchArticles}/>
       {engine.progress&&<Spinner text={engine.progress}/>}{engine.error&&<ErrorMsg msg={engine.error}/>}
       <ResultsView results={engine.results} done={engine.done}/>
     </React.Fragment>
@@ -796,9 +796,9 @@ function CategoryTab(){
     let totalScanned=0;for(let i=0;i<cats.length&&totalScanned<500;i++){if(i>0)await new Promise(r=>setTimeout(r,500));setGatherMsg(`Category ${i+1}/${cats.length}: ${cats[i].replace("Category:","")}`);const members=await fetchCatMembers(cats[i],Math.min(50,500-totalScanned));const batch=members.filter(t=>!seen.has(t));batch.forEach(t=>seen.add(t));if(batch.length){setGatherMsg("");await engine.scanArticles(batch,{append:totalScanned>0});totalScanned+=batch.length}}}catch(e){setCatError(e.message||"An error occurred")}finally{setGatherMsg("")}};
   return(
     <React.Fragment>
-      <AutocompleteInput placeholder="Search for a Wikipedia category…" value={input} onChange={setInput} onGo={go} loading={engine.loading} onStop={engine.stop} searchFn={searchCategories}/>
+      <AutocompleteInput placeholder="“Sök efter en Wikipedia‑kategori…" value={input} onChange={setInput} onGo={go} loading={engine.loading} onStop={engine.stop} searchFn={searchCategories}/>
       <div style={{display:"flex",alignItems:"center",gap:10,margin:"10px 0 14px",flexWrap:"wrap"}}>
-        <span style={{fontSize:13,color:C.textSec,fontWeight:600}}>Include subcategories:</span>
+        <span style={{fontSize:13,color:C.textSec,fontWeight:600}}>Inkludera underkategorier:</span>
         {[{v:0,l:"None"},{v:1,l:"1 level"},{v:2,l:"2 levels"},{v:3,l:"3 levels"}].map(o=>(
           <button key={o.v} onClick={()=>setSubDepth(o.v)} style={{padding:"5px 12px",borderRadius:C.radiusSm,border:`1px solid ${subDepth===o.v?C.accent:C.cardBorder}`,background:subDepth===o.v?C.accent:C.card,color:subDepth===o.v?"#FAF9F5":C.textSec,fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:C.sans}}>{o.l}</button>
         ))}
@@ -822,13 +822,13 @@ function TopicTab(){
     return shuffled.slice(0, Math.min(count, shuffled.length));
   }
 
-  const startScan=async(allCats)=>{engine.reset();setPhase("scanning");setGatherProgress("Starting scan…");
+  const startScan=async(allCats)=>{engine.reset();setPhase("scanning");setGatherProgress("Startar skanning…");
     try{const seen=new Set();let totalScanned=0;
       const cats=pickRandomCats(allCats,Math.min(8,allCats.length));
       for(let i=0;i<cats.length&&totalScanned<500;i++){if(i>0)await new Promise(r=>setTimeout(r,500));setGatherProgress(`Category ${i+1}/${cats.length}: ${cats[i].replace("Category:","")}`);const members=await fetchCatMembers(cats[i],Math.min(50,500-totalScanned));const batch=members.filter(t=>!seen.has(t));batch.forEach(t=>seen.add(t));if(batch.length){setGatherProgress("");await engine.scanArticles(batch,{append:totalScanned>0});totalScanned+=batch.length}}
       setGatherProgress("");setPhase("scanning")}catch(e){setGatherProgress("");setPhase("pick")}};
   const handleTopicSelect=t=>{setSelectedTopic(t);startScan(t.cats)};
-  const handleCustom=()=>{const cats=customCats.split("\n").map(s=>s.trim()).filter(Boolean).map(c=>c.startsWith("Category:")?c:`Category:${c}`);if(!cats.length)return;setSelectedTopic({id:"custom",label:"Custom",icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,cats});startScan(cats)};
+  const handleCustom=()=>{const cats=customCats.split("\n").map(s=>s.trim()).filter(Boolean).map(c=>c.startsWith("Kategori:")?c:`Category:${c}`);if(!cats.length)return;setSelectedTopic({id:"custom",label:"Custom",icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,cats});startScan(cats)};
   const backToPick=()=>{engine.stop();engine.reset();setSelectedTopic(null);setPhase("pick");setGatherProgress("")};
 
   if(phase==="pick")return(
@@ -836,7 +836,7 @@ function TopicTab(){
       <div style={{marginBottom:16}}><h3 style={{fontSize:17,fontWeight:700,color:C.text,margin:"0 0 6px",fontFamily:C.serif}}>Choose a topic area</h3><p style={{fontSize:13,color:C.muted,margin:0,lineHeight:1.5}}>Select a predefined topic or define your own categories below.</p></div>
       <div style={{background:C.amberSoft,border:`1px solid ${C.amberBorder}`,borderRadius:C.radiusSm,padding:"12px 16px",marginBottom:20,display:"flex",alignItems:"center",gap:10}}>
         <span style={{fontSize:20,lineHeight:1,flexShrink:0}}>📋</span>
-        <div><span style={{fontWeight:700,fontSize:13,color:C.amber}}>Scans 500 articles per round.</span><span style={{fontSize:12,color:C.textSec,marginLeft:4}}>If fewer than 5 affected articles are found, the scan automatically continues with a new batch of articles (up to 10 rounds). Articles are randomly sampled each time.</span></div>
+        <div><span style={{fontWeight:700,fontSize:13,color:C.amber}}>Skannar 500 artiklar per omgång.</span><span style={{fontSize:12,color:C.textSec,marginLeft:4}}>Om färre än 5 berörda artiklar hittas fortsätter skanningen automatiskt med en ny uppsättning artiklar (upp till 10 omgångar). Artiklarna slumpas vid varje körning.</span></div>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(155px, 1fr))",gap:10,marginBottom:28}}>
         {TOPICS.map(t=>(
@@ -846,11 +846,11 @@ function TopicTab(){
           </button>))}
       </div>
       <div style={{background:C.card,borderRadius:C.radius,padding:22,border:`1px solid ${C.cardBorder}`,boxShadow:C.shadow}}>
-        <h4 style={{margin:"0 0 6px",fontSize:15,fontWeight:700,color:C.text,fontFamily:C.serif}}>Custom categories</h4>
-        <p style={{fontSize:12,color:C.muted,margin:"0 0 14px",lineHeight:1.5}}>Enter one Wikipedia category per line (up to 500 articles total).</p>
+        <h4 style={{margin:"0 0 6px",fontSize:15,fontWeight:700,color:C.text,fontFamily:C.serif}}>Custom kategorier</h4>
+        <p style={{fontSize:12,color:C.muted,margin:"0 0 14px",lineHeight:1.5}}>“Ange en Wikipedia‑kategori per rad (upp till totalt 500 artiklar).</p>
         <textarea value={customCats} onChange={e=>setCustomCats(e.target.value)} placeholder={"Category:Climate change\nCategory:Renewable energy\nCategory:Solar energy"} rows={4} style={{width:"100%",boxSizing:"border-box",padding:"12px 14px",borderRadius:C.radiusSm,border:`1px solid ${C.cardBorder}`,background:C.bg,color:C.text,fontSize:13,fontFamily:C.mono,resize:"vertical"}}/>
         <button onClick={handleCustom} disabled={!customCats.trim()} onMouseEnter={e=>{if(customCats.trim())e.currentTarget.style.background=C.btnDarkHover}} onMouseLeave={e=>{e.currentTarget.style.background=C.btnDark}}
-          style={{marginTop:12,padding:"10px 24px",borderRadius:C.radiusSm,border:"none",background:C.btnDark,color:"#FAF9F5",fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:C.sans,opacity:customCats.trim()?1:0.35}}>Scan custom categories</button>
+          style={{marginTop:12,padding:"10px 24px",borderRadius:C.radiusSm,border:"none",background:C.btnDark,color:"#FAF9F5",fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:C.sans,opacity:customCats.trim()?1:0.35}}>Skanna egna kategorier</button>
       </div>
     </div>
   );
@@ -860,11 +860,11 @@ function TopicTab(){
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18,flexWrap:"wrap",gap:10}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
           <button onClick={backToPick} onMouseEnter={e=>e.currentTarget.style.borderColor=C.accent} onMouseLeave={e=>e.currentTarget.style.borderColor=C.cardBorder}
-            style={{padding:"7px 16px",borderRadius:C.radiusSm,border:`1px solid ${C.cardBorder}`,background:C.card,color:C.muted,fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:C.sans,boxShadow:C.shadow}}>← Back</button>
+            style={{padding:"7px 16px",borderRadius:C.radiusSm,border:`1px solid ${C.cardBorder}`,background:C.card,color:C.muted,fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:C.sans,boxShadow:C.shadow}}>← Tillbaka</button>
           {selectedTopic&&<span style={{display:"inline-flex",alignItems:"center",gap:8,fontSize:15,fontWeight:700,color:C.text,fontFamily:C.serif}}><span style={{color:C.accent}} dangerouslySetInnerHTML={{__html:selectedTopic.icon}}/>{selectedTopic.label}</span>}
-          {engine.results.length>0&&<span style={{fontSize:11,color:C.muted,background:C.bgAlt,padding:"4px 10px",borderRadius:"999px",border:`1px solid ${C.cardBorder}`,fontWeight:600}}>{engine.results.length} scanned</span>}
+          {engine.results.length>0&&<span style={{fontSize:11,color:C.muted,background:C.bgAlt,padding:"4px 10px",borderRadius:"999px",border:`1px solid ${C.cardBorder}`,fontWeight:600}}>{engine.results.length} skannades</span>}
         </div>
-        {engine.loading&&<button onClick={()=>{engine.stop();setPhase("scanning")}} style={{padding:"7px 16px",borderRadius:C.radiusSm,border:"none",background:C.red,color:"#fff",fontSize:12,fontWeight:600,cursor:"pointer"}}>Stop scan</button>}
+        {engine.loading&&<button onClick={()=>{engine.stop();setPhase("scanning")}} style={{padding:"7px 16px",borderRadius:C.radiusSm,border:"none",background:C.red,color:"#fff",fontSize:12,fontWeight:600,cursor:"pointer"}}>Stoppa skanning</button>}
       </div>
       {gatherProgress&&<Spinner text={gatherProgress}/>}{engine.progress&&<Spinner text={engine.progress}/>}{engine.error&&<ErrorMsg msg={engine.error}/>}
       <ResultsView results={engine.results} done={engine.done} showOnlyAffected={true}/>
@@ -898,7 +898,7 @@ function HighTrafficTab() {
   const startScan = async () => {
     setFetchError(null);
     setPhase('fetching');
-    setFetchProgress('Fetching top viewed pages from Wikimedia Pageviews API…');
+    setFetchProgress('Hämtar mest visade sidor från Wikimedia Pageviews API…');
     engine.reset();
 
     try {
@@ -906,7 +906,7 @@ function HighTrafficTab() {
       setTopPages(pages);
 
       if (pages.length === 0) {
-        setFetchError('No pages returned from the API for this month.');
+        setFetchError('Inga sidor returnerades från API:et för denna månad.');
         setPhase('pick');
         return;
       }
@@ -924,7 +924,7 @@ function HighTrafficTab() {
         await engine.scanArticles(batch, { append: i > 0 });
       }
     } catch (err) {
-      setFetchError(err.message || 'Failed to fetch top pages.');
+      setFetchError(err.message || 'Det gick inte att hämta toppsidorna.');
       setPhase('pick');
     }
   };
@@ -949,20 +949,20 @@ function HighTrafficTab() {
       <div>
         <div style={{ marginBottom: 16 }}>
           <h3 style={{ fontSize: 17, fontWeight: 700, color: C.text, margin: '0 0 6px', fontFamily: C.serif }}>
-            Scan high-traffic pages
+            Skanna sidor med hög trafik
           </h3>
           <p style={{ color: C.muted, fontSize: 13, margin: 0, lineHeight: 1.55 }}>
-            Fetches the top ~1,000 most viewed Wikipedia articles for a given month from the
+            Hämtar de cirka 1 000 mest visade Wikipedia‑artiklarna för en given månad från
             {' '}<a href="https://doc.wikimedia.org/generated-data-platform/aqs/analytics-api/reference/page-views.html"
                     target="_blank" rel="noopener noreferrer"
                     style={{ color: C.accent, textDecoration: 'none', fontWeight: 600 }}>
               Wikimedia Pageviews API
-            </a>, then scans them for archive.today links.
-            This is the same data source used for the
+            </a>, och skannar dem sedan efter archive.today‑länkar.
+            Detta är samma datakälla som används för
             {' '}<a href="https://en.wikipedia.org/wiki/Wikipedia:Archive.today_guidance/high_traffic_pages_index"
                     target="_blank" rel="noopener noreferrer"
                     style={{ color: C.accent, textDecoration: 'none', fontWeight: 600 }}>
-              high-traffic pages index
+              ndexet över högtrafikerade sidor.
             </a>.
           </p>
         </div>
@@ -977,7 +977,7 @@ function HighTrafficTab() {
           <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap' }}>
             <div>
               <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Month
+                Månad
               </label>
               <select
                 value={month}
@@ -997,7 +997,7 @@ function HighTrafficTab() {
 
             <div>
               <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Year
+                År
               </label>
               <select
                 value={year}
@@ -1023,7 +1023,7 @@ function HighTrafficTab() {
                 fontSize: 13, fontWeight: 600, cursor: 'pointer',
                 fontFamily: C.sans, boxShadow: C.shadow
               }}>
-              Scan top pages
+              Skanna toppsidor
             </button>
           </div>
 
@@ -1058,7 +1058,7 @@ function HighTrafficTab() {
               padding: '4px 10px', borderRadius: '999px',
               border: `1px solid ${C.cardBorder}`, fontWeight: 600
             }}>
-              {topPages.length} pages fetched
+              {topPages.length} sidor hämtade
             </span>
           )}
         </div>
@@ -1070,7 +1070,7 @@ function HighTrafficTab() {
               border: 'none', background: C.red, color: '#fff',
               fontSize: 12, fontWeight: 600, cursor: 'pointer'
             }}>
-            Stop scan
+            Stoppa skanning
           </button>
         )}
       </div>
@@ -1091,26 +1091,26 @@ function App(){
       <header style={{borderBottom:`1px solid ${C.cardBorder}`,padding:"28px 20px 0",textAlign:"center",background:C.card}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:8}}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L12 22M2 12H22M4.93 4.93L19.07 19.07M19.07 4.93L4.93 19.07" stroke="#D97757" strokeWidth="2.5" strokeLinecap="round"/></svg>
-          <span style={{fontSize:12,color:C.accent,letterSpacing:"0.08em",textTransform:"uppercase",fontWeight:700}}>Wikipedia Reference Audit</span>
+          <span style={{fontSize:12,color:C.accent,letterSpacing:"0.08em",textTransform:"uppercase",fontWeight:700}}>Wikipedia‑referensgranskning</span>
         </div>
-        <h1 style={{fontFamily:C.serif,fontSize:"clamp(22px,3.5vw,32px)",fontWeight:700,margin:"0 0 6px",color:C.text,lineHeight:1.2}}>Archive.today Link Detector</h1>
-        <p style={{color:C.muted,fontSize:13,maxWidth:580,margin:"0 auto 20px",lineHeight:1.55}}>Detect archive.today references in English Wikipedia, find Wayback Machine replacements, and fix them directly.</p>
+        <h1 style={{fontFamily:C.serif,fontSize:"clamp(22px,3.5vw,32px)",fontWeight:700,margin:"0 0 6px",color:C.text,lineHeight:1.2}}>Archive.today‑länkdetektor</h1>
+        <p style={{color:C.muted,fontSize:13,maxWidth:580,margin:"0 auto 20px",lineHeight:1.55}}>Upptäck archive.today‑referenser på engelska Wikipedia, hitta ersättningar i Wayback Machine och åtgärda dem direkt.</p>
         <div style={{display:"flex",justifyContent:"center",gap:0,borderTop:`1px solid ${C.cardBorder}`,margin:"0 -20px",padding:"0 20px"}}>
-          <TabBtn active={tab==="article"} onClick={()=>setTab("article")}>Article</TabBtn>
-          <TabBtn active={tab==="category"} onClick={()=>setTab("category")}>Category</TabBtn>
-          <TabBtn active={tab==="topic"} onClick={()=>setTab("topic")}>Topic Browse</TabBtn>
-          <TabBtn active={tab==="hightraffic"} onClick={()=>setTab("hightraffic")}>High Traffic</TabBtn>
+          <TabBtn active={tab==="article"} onClick={()=>setTab("article")}>Artikel</TabBtn>
+          <TabBtn active={tab==="category"} onClick={()=>setTab("category")}>Kategori</TabBtn>
+          <TabBtn active={tab==="topic"} onClick={()=>setTab("topic")}>Ämnesbläddring</TabBtn>
+          <TabBtn active={tab==="hightraffic"} onClick={()=>setTab("hightraffic")}>Hög trafik</TabBtn>
         </div>
       </header>
       <main style={{maxWidth:880,margin:"0 auto",padding:"24px 20px 48px"}}>{tab==="article"&&<ArticleTab/>}{tab==="category"&&<CategoryTab/>}{tab==="topic"&&<TopicTab/>}{tab==="hightraffic"&&<HighTrafficTab/>}</main>
       <footer style={{maxWidth:880,margin:"0 auto",padding:"0 20px 32px"}}>
         <div style={{padding:"16px 20px",background:C.bgAlt,borderRadius:C.radius,border:`1px solid ${C.cardBorder}`,fontSize:12,color:C.muted,lineHeight:1.8}}>
-          <strong style={{color:C.textSec}}>Detected domains:</strong> {AT_DOMAINS.join(", ")}<br/>
-          <strong style={{color:C.textSec}}>How it works:</strong> Fetches wikitext → regex-matches archive.today URLs → extracts original URLs → queries Wayback Machine API → provides one-click edit links.<br/>
-          <strong style={{color:C.textSec}}>Limits:</strong> Up to 500 articles per scan. Wayback checks rate-limited (~300ms between requests). Auto-retries failed requests with backoff.
+          <strong style={{color:C.textSec}}>Upptäckta domäner:</strong> {AT_DOMAINS.join(", ")}<br/>
+          <strong style={{color:C.textSec}}>Hur det fungerar:</strong> Hämtar wikitext → regex‑matchar archive.today‑URL:er → extraherar original‑URL:er → frågar Wayback Machine‑API:t → ger redigeringslänkar med ett klick.<br/>
+          <strong style={{color:C.textSec}}>Begränsningar:</strong> Upp till 500 artiklar per skanning. Wayback‑kontroller är hastighetsbegränsade (~300 ms mellan förfrågningar). Misslyckade förfrågningar återförsöks automatiskt med ökande väntetid.
         </div>
         <div style={{textAlign:"center",marginTop:16,fontSize:12,color:C.mutedLight}}>
-          Created by <a href="https://github.com/nethahussain" target="_blank" rel="noopener noreferrer" style={{color:C.accent,textDecoration:"none",fontWeight:600}} onMouseEnter={e=>e.currentTarget.style.textDecoration="underline"} onMouseLeave={e=>e.currentTarget.style.textDecoration="none"}>Netha Hussain</a> with Claude AI · <a href="https://github.com/nethahussain/wikipedia-archive-today-detector" target="_blank" rel="noopener noreferrer" style={{color:C.accent,textDecoration:"none",fontWeight:600}} onMouseEnter={e=>e.currentTarget.style.textDecoration="underline"} onMouseLeave={e=>e.currentTarget.style.textDecoration="none"}>Source code</a>
+          (Engelska) Original created by <a href="https://github.com/nethahussain" target="_blank" rel="noopener noreferrer" style={{color:C.accent,textDecoration:"none",fontWeight:600}} onMouseEnter={e=>e.currentTarget.style.textDecoration="underline"} onMouseLeave={e=>e.currentTarget.style.textDecoration="none"}>Netha Hussain</a> with Claude AI · <a href="https://github.com/nethahussain/wikipedia-archive-today-detector" target="_blank" rel="noopener noreferrer" style={{color:C.accent,textDecoration:"none",fontWeight:600}} onMouseEnter={e=>e.currentTarget.style.textDecoration="underline"} onMouseLeave={e=>e.currentTarget.style.textDecoration="none"}>Source code</a><a href="https://github.com/DarthCalvinus" target="_blank" rel="noopener noreferrer" style={{color:C.accent,textDecoration:"none",fontWeight:600}} onMouseEnter={e=>e.currentTarget.style.textDecoration="underline"} onMouseLeave={e=>e.currentTarget.style.textDecoration="none"}>DarthCalvinus (Wikipedia username Grilledcheeseisgreat)</a> · <a href="https://github.com/DarthCalvinus/swedish-wikipedia-archive-today-detector" target="_blank" rel="noopener noreferrer" style={{color:C.accent,textDecoration:"none",fontWeight:600}} onMouseEnter={e=>e.currentTarget.style.textDecoration="underline"} onMouseLeave={e=>e.currentTarget.style.textDecoration="none"}>Source code</a>
         </div>
       </footer>
     </div>
