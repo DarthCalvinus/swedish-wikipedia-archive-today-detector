@@ -1,18 +1,15 @@
-# Archive.today Link Detector — Wikipedia Reference Audit Tool
-
-## 🔗 [**▶ Use the tool live on Toolforge →**](https://fixarchive.toolforge.org/)
+# Archive.today Link Detector — Wikipedia Reference Audit Tool (Swedish version)
 
 > No login. No install. No API key. Works in any browser, instantly.
 >
-> **Note:** This tool has moved to [Wikimedia Toolforge](https://fixarchive.toolforge.org/). The old GitHub Pages URL redirects there automatically.
 
 ---
 
-A browser-based tool to detect [archive.today](https://archive.today) references in English Wikipedia articles, find [Wayback Machine](https://web.archive.org) replacements, and fix them directly with one-click editing.
+A browser-based tool to detect [archive.today](https://archive.today) references in Swedish Wikipedia articles, find [Wayback Machine](https://web.archive.org) replacements, and fix them directly with one-click editing.
 
 ## Why?
 
-In February 2026, English Wikipedia [blacklisted archive.today](https://en.wikipedia.org/wiki/Wikipedia:ATODAY) after the site was found to be weaponising its CAPTCHA page to direct visitors' browsers into a DDoS attack against a security blogger, and after editors discovered that the site's operators had tampered with the content of archived web snapshots. Over 695,000 links across roughly 400,000 Wikipedia articles now need to be replaced with alternatives such as the Wayback Machine — this tool helps editors do that systematically.
+In February 2026, English Wikipedia [blacklisted archive.today](https://en.wikipedia.org/wiki/Wikipedia:ATODAY) after the site was found to be weaponising its CAPTCHA page to direct visitors' browsers into a DDoS attack against a security blogger, and after editors discovered that the site's operators had tampered with the content of archived web snapshots. Over 695,000 links across roughly 400,000 Wikipedia articles now need to be replaced with alternatives such as the Wayback Machine — this tool helps editors do that systematically. Swedish Wikipedia followed, and also has hundreds of thousands of archive.today links.
 
 ## Features
 
@@ -83,4 +80,4 @@ To the extent possible under law, the author has waived all copyright and relate
 
 ## Author
 
-Created by [Netha Hussain](https://github.com/nethahussain) with Claude AI.
+Original created by [Netha Hussain](https://github.com/nethahussain) with Claude AI. This version created by DarthCalvinus (Wikipedia username Grilledcheeseisgreat), forked from the original.
