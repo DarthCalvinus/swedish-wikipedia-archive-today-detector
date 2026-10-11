@@ -115,7 +115,7 @@ function extractOriginalUrl(archiveUrl, wikitext) {
 }
 
 /* ── API helpers ── */
-function extractOriginalUrlOrignal(archiveUrl, wikitext) {
+function extractOriginalUrlOriginal(archiveUrl, wikitext) {
   try {
     const u = new URL(archiveUrl), p = u.pathname + u.search;
     const m = p.match(/\/((?:\d{8,14}\/)?)(https?:\/\/.+)/);
@@ -222,7 +222,7 @@ function extractWaybackDate(waybackUrl){
 /* ── Mass Edit Logic (Hidden POST Form) ── */
 const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-function executeMassEdit(title, originalWikitext, selectedLinks) {
+async function executeMassEdit(title, originalWikitext, selectedLinks) {
   let newText = originalWikitext;
   let replacedCount = 0;
 
@@ -280,6 +280,16 @@ function executeMassEdit(title, originalWikitext, selectedLinks) {
     return;
   }
 
+  let editToken = "+\\";
+  try {
+    const tokenData = await mwApi({ action: 'query', meta: 'tokens', type: 'csrf' });
+    if (tokenData.query?.tokens?.csrftoken) {
+      editToken = tokenData.query.tokens.csrftoken;
+    }
+  } catch (e) {
+    console.warn("Could not fetch fresh edit token, falling back:", e);
+  }
+
   const summary = `Ersätter ${replacedCount} archive.today-länk${replacedCount > 1 ? 'ar' : ''} med Wayback Machine-alternativ per [[Wikipedia:Arkivering]] (via WP:Länkdetektor)`;
 
   const form = document.createElement('form');
@@ -314,7 +324,7 @@ function executeMassEdit(title, originalWikitext, selectedLinks) {
   const tokenInput = document.createElement('input');
   tokenInput.type = 'hidden';
   tokenInput.name = 'wpEditToken';
-  tokenInput.value = '+\\';
+  tokenInput.value = editToken;
   form.appendChild(tokenInput);
 
   document.body.appendChild(form);
@@ -689,16 +699,17 @@ function ResultsView({results,done,showOnlyAffected=false}){
                           {lState.editMode ? (
                              <div style={{display:"flex", gap:6, marginTop:4, alignItems:"center"}}>
                                <input id={`edit-${li}`} type="text" defaultValue={displayUrl} style={{flex:1, padding:"4px 8px", fontSize:12, borderRadius:4, border:`1px solid ${C.greenBorder}`}} />
+                               <input id={`edit-${encodeURIComponent(art.title)}-${li}`} type="text" defaultValue={displayUrl} style={{flex:1, padding:"4px 8px", fontSize:12, borderRadius:4, border:`1px solid ${C.greenBorder}`}} />
                                <button onClick={()=>{
-                                   const val = document.getElementById(`edit-${li}`).value.trim();
-                                   let newDate = null;
-                                   const dMatch = val.match(/\/web\/(\d{14})/);
-                                   if(dMatch) {
-                                       const d = dMatch[1];
-                                       newDate = `${d.substring(0,4)}-${d.substring(4,6)}-${d.substring(6,8)}`;
-                                   }
-                                   setLinkStates(p=>({...p, [id]: {...p[id], editMode:false, customUrl:val, customDate:newDate, stage:0}}));
-                               }} style={{padding:"4px 8px", background:C.accent, color:"#fff", border:"none", borderRadius:4, cursor:"pointer", fontSize:11, fontWeight:"bold"}}>Spara</button>
+                                  const val = document.getElementById(`edit-${encodeURIComponent(art.title)}-${li}`).value.trim();
+                                  let newDate = null;
+                                  const dMatch = val.match(/\/web\/(\d{14})/);
+                                  if(dMatch) {
+                                      const d = dMatch[1];
+                                      newDate = `${d.substring(0,4)}-${d.substring(4,6)}-${d.substring(6,8)}`;
+                                  }
+                                  setLinkStates(p=>({...p, [id]: {...p[id], editMode:false, customUrl:val, customDate:newDate, stage:0}}));
+                              }} style={{padding:"4px 8px", background:C.accent, color:"#fff", border:"none", borderRadius:4, cursor:"pointer", fontSize:11, fontWeight:"bold"}}>Spara</button>
                                <button onClick={()=>setLinkStates(p=>({...p, [id]: {...p[id], editMode:false}}))} style={{padding:"4px 8px", background:"transparent", color:C.muted, border:"none", cursor:"pointer", fontSize:11}}>Avbryt</button>
                              </div>
                           ) : (
