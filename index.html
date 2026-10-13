@@ -88,13 +88,11 @@ function extractOriginalUrl(archiveUrl, wikitext) {
   } catch(e) {}
 
   if (!wikitext) {
-      console.warn("ABORT 1: Wikitext variable is missing for:", archiveUrl);
       return null;
   }
 
   const blockInfo = extractCitationBlock(wikitext, archiveUrl);
   if (!blockInfo || !blockInfo.text) {
-      console.warn("ABORT 2: State Machine failed to isolate a citation for:", archiveUrl);
       return null;
   }
 
@@ -102,42 +100,15 @@ function extractOriginalUrl(archiveUrl, wikitext) {
   const match = urlRegex.exec(blockInfo.text);
   
   if (!match || !match[1]) {
-      console.warn("ABORT 3: Regex failed to find a valid |url= inside this block:", blockInfo.text);
       return null;
   }
 
   if (match[1].match(/archive\.(today|is|ph|fo|li|vn|md)/i) || match[1].match(/web\.archive\.org/i)) {
-      console.warn("ABORT 4: The extracted URL was another archive link:", match[1]);
       return null;
   }
 
-  return match[1]; // Success!
+  return match[1];
 }
-
-/* ── API helpers ── */
-function extractOriginalUrlOriginal(archiveUrl, wikitext) {
-  try {
-    const u = new URL(archiveUrl), p = u.pathname + u.search;
-    const m = p.match(/\/((?:\d{8,14}\/)?)(https?:\/\/.+)/);
-    if (m && m[2]) return m[2];
-  } catch(e) {}
-
-  if (!wikitext) return null;
-
-  const blockInfo = extractCitationBlock(wikitext, archiveUrl);
-  if (!blockInfo || !blockInfo.text) return null;
-
-  const urlRegex = /\|\s*url\s*=\s*(https?:\/\/[^[\]|{}\s<>"]+)/i;
-  const match = urlRegex.exec(blockInfo.text);
-  
-  if (match && match[1]) {
-     if (match[1].match(/archive\.(today|is|ph|fo|li|vn|md)/i)) return null;
-     if (match[1].match(/web\.archive\.org/i)) return null;
-     return match[1];
-  }
-  return null;
-}
-
 
 async function checkWayback(o,retries=3){
   for(let attempt=0;attempt<=retries;attempt++){
@@ -225,52 +196,73 @@ const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 async function executeMassEdit(title, originalWikitext, selectedLinks) {
   let newText = originalWikitext;
   let replacedCount = 0;
+  let replacements = [];
 
   selectedLinks.forEach(link => {
     if (link.archiveUrl && link.waybackUrl) {
       const blockInfo = extractCitationBlock(newText, link.archiveUrl);
-      
-      if (blockInfo.text && blockInfo.text.includes(link.archiveUrl)) {
-         let updatedBlock = blockInfo.text;
-         
-         updatedBlock = updatedBlock.split(link.archiveUrl).join(link.waybackUrl);
-         
-         if (link.waybackDate) {
-             const dateRegex = /(\|\s*(?:archive-?date|arkivdatum)\s*=)[^|}]*/i;
 
-             if (dateRegex.test(updatedBlock)) {
-                 updatedBlock = updatedBlock.replace(dateRegex, `$1 ${link.waybackDate}`);
-             } else {
-                 const afterArchiveUrl = /(\|\s*(?:archive-?url|arkivurl)\s*=[^|}]*)/i;
-                 if (afterArchiveUrl.test(updatedBlock)) {
-                     updatedBlock = updatedBlock.replace(
-                         afterArchiveUrl,
-                         `$1 |arkivdatum=${link.waybackDate}`
-                     );
-                 }
-             }
-         }
-         
-         newText = newText.substring(0, blockInfo.start) + updatedBlock + newText.substring(blockInfo.end);
-         replacedCount++;
-      } else {
-         const before = newText;
-         newText = newText.split(link.archiveUrl).join(link.waybackUrl);
-         if (newText !== before) {
-           replacedCount++;
-           if (link.waybackDate) {
-             const dateRegex = /(\|\s*(?:archive-?date|arkivdatum)\s*=)[^|}]*/i;
-             if (!dateRegex.test(newText)) {
-               const afterArchiveUrl = /(\|\s*(?:archive-?url|arkivurl)\s*=[^|}]*)/i;
-               if (afterArchiveUrl.test(newText)) {
-                 newText = newText.replace(
-                   afterArchiveUrl,
-                   `$1 |arkivdatum=${link.waybackDate}`
-                 );
-               }
-             }
-           }
-         }
+      if (blockInfo.text && blockInfo.text.includes(link.archiveUrl)) {
+        let updatedBlock = blockInfo.text;
+        updatedBlock = updatedBlock.split(link.archiveUrl).join(link.waybackUrl);
+
+        if (link.waybackDate) {
+          const dateRegex = /(\|\s*(?:archive-?date|arkivdatum)\s*=)[^|}]*/i;
+
+          if (dateRegex.test(updatedBlock)) {
+            updatedBlock = updatedBlock.replace(dateRegex, `$1 ${link.waybackDate}`);
+          } else {
+            const afterArchiveUrl = /(\|\s*(?:archive-?url|arkivurl)\s*=[^|}]*)/i;
+            if (afterArchiveUrl.test(updatedBlock)) {
+              updatedBlock = updatedBlock.replace(
+                afterArchiveUrl,
+                `$1 |arkivdatum=${link.waybackDate}`
+              );
+            }
+          }
+        }
+
+        replacements.push({
+          start: blockInfo.start,
+          end: blockInfo.end,
+          updatedBlock,
+          archiveUrl: link.archiveUrl
+        });
+      }
+    }
+  });
+
+  replacements.sort((a, b) => b.start - a.start);
+
+  replacements.forEach(rep => {
+    newText =
+      newText.substring(0, rep.start) +
+      rep.updatedBlock +
+      newText.substring(rep.end);
+    replacedCount++;
+  });
+
+  selectedLinks.forEach(link => {
+    if (link.archiveUrl && link.waybackUrl) {
+      const wasReplaced = replacements.some(r => r.archiveUrl === link.archiveUrl);
+      if (!wasReplaced && newText.includes(link.archiveUrl)) {
+        const before = newText;
+        newText = newText.split(link.archiveUrl).join(link.waybackUrl);
+        if (newText !== before) {
+          replacedCount++;
+          if (link.waybackDate) {
+            const dateRegex = /(\|\s*(?:archive-?date|arkivdatum)\s*=)[^|}]*/i;
+            if (!dateRegex.test(newText)) {
+              const afterArchiveUrl = /(\|\s*(?:archive-?url|arkivurl)\s*=[^|}]*)/i;
+              if (afterArchiveUrl.test(newText)) {
+                newText = newText.replace(
+                  afterArchiveUrl,
+                  `$1 |arkivdatum=${link.waybackDate}`
+                );
+              }
+            }
+          }
+        }
       }
     }
   });
@@ -469,7 +461,6 @@ function TabBtn({active,children,onClick}){return<button onClick={onClick} style
 function EditIcon(){return<svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{flexShrink:0}}><path d="M11.5 1.5L14.5 4.5L5 14H2V11L11.5 1.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M9.5 3.5L12.5 6.5" stroke="currentColor" strokeWidth="1.5"/></svg>}
 function ErrorMsg({msg}){return<div style={{background:C.redSoft,border:`1px solid ${C.redBorder}`,borderRadius:C.radiusSm,padding:"12px 16px",color:C.red,marginBottom:16,fontSize:13,lineHeight:1.5}}>{msg}</div>}
 
-
 /* ── Scan Engine ── */
 function useScanEngine(){
   const[results,setResults]=useState([]);const[loading,setLoading]=useState(false);const[progress,setProgress]=useState("");const[error,setError]=useState("");const[done,setDone]=useState(false);const abort=useRef(false);const affectedCount=useRef(0);
@@ -533,25 +524,10 @@ function ResultsView({results,done,showOnlyAffected=false}){
 
   const handleVerifyClick=(id)=>{
     setLinkStates(p=>{
-      if(p[id] && p[id].stage > 0) return p; 
-      
-      let ticks = 5;
-      const iv = setInterval(()=>{
-        ticks--;
-        if(ticks <= 0){
-          clearInterval(iv);
-          setLinkStates(prev=>({...prev, [id]: {...prev[id], stage: 2}})); 
-        } else {
-          setLinkStates(prev=>({...prev, [id]: {...prev[id], stage: 1, timer: ticks}})); 
-        }
-      }, 1000);
-      
-      return {...p, [id]: {...p[id], stage: 1, timer: 5}}; 
+      const current = p[id] || { stage: 0 };
+      const nextStage = current.stage === 3 ? 0 : 3;
+      return {...p, [id]: {...current, stage: nextStage}};
     });
-  };
-
-  const toggleQueue=(id)=>{
-    setLinkStates(p=>({...p,[id]:{...p[id],stage:p[id].stage===2?3:2}}));
   };
 
   return(
@@ -560,14 +536,13 @@ function ResultsView({results,done,showOnlyAffected=false}){
         <div style={{background:C.blueSoft,border:`1px solid ${C.blueBorder}`,borderRadius:C.radius,padding:"16px 20px",marginBottom:16}}>
           <div style={{fontWeight:700,marginBottom:8,display:"flex",alignItems:"center",gap:6,fontSize:13,color:C.blue}}><EditIcon/> Hur man åtgärdar artiklar (Assisterad granskning)</div>
           <div style={{color:C.textSec,fontSize:12,lineHeight:1.8}}>
-            <strong>1.</strong> Klicka på de gröna <strong>Wayback Machine</strong>-länkarna för att verifiera ögonblicksbilden. Vänta i 5 sekunder.<br/>
-            <strong>2.</strong> Klicka på knappen <strong>Verifierad?</strong> bredvid varje länk för att förbereda din korrigering.<br/>
+            <strong>1.</strong> Klicka på de gröna <strong>Wayback Machine</strong>-länkarna för att verifiera ögonblicksbilden.<br/>
+            <strong>2.</strong> Klicka på knappen <strong>Verifierad?</strong> bredvid varje länk för att markera den som klar.<br/>
             <strong>3.</strong> Klicka <strong style={{color:C.accent}}>Skicka verifierade arkiv till Wikipedia</strong> för att öppna redigeraren med dina verifierade ändringar förifyllda.
           </div>
         </div>
       )}
 
-      
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(110px, 1fr))",gap:10,marginBottom:24}}>
         <Stat value={results.length} label="Skannade" variant="muted"/><Stat value={affected.length} label="Berörda" variant="red"/>
         <Stat value={totalLinks} label="AT-länkar" variant="amber"/><Stat value={withAlts} label="Alternativ" variant="green"/>
@@ -646,6 +621,7 @@ function ResultsView({results,done,showOnlyAffected=false}){
                 const lState = linkStates[id]||{stage:0};
                 const displayUrl = lState.customUrl || lk.waybackUrl;
                 const displayDate = lState.customUrl ? lState.customDate : lk.waybackDate;
+                const isVerified = lState.stage === 3;
 
                 return(
                 <div key={li} style={{background:C.bgAlt,borderRadius:C.radiusSm,padding:"14px 16px",marginBottom:8,borderLeft:`3px solid ${lk.waybackUrl?C.green:lk.status==="pending"?C.amber:C.red}`}}>
@@ -654,30 +630,28 @@ function ResultsView({results,done,showOnlyAffected=false}){
                       {lk.waybackUrl && (
                         <div style={{marginTop: 4}}>
                           <button 
-                            title="Verifiera den nya arkiv-URL:en innan du väljer."
-                            disabled={lState.stage < 2}
-                            onClick={()=>toggleQueue(id)}
+                            title="Klicka för att markera som verifierad."
+                            onClick={()=>handleVerifyClick(id)}
                             style={{
                               padding: "8px 14px",
                               borderRadius: "6px",
                               fontWeight: "bold",
                               fontSize: "12px",
-                              cursor: lState.stage < 2 ? "not-allowed" : "pointer",
+                              cursor: "pointer",
                               border: "none",
                               transition: "all 0.1s ease",
-                              background: lState.stage === 0 ? "#e2e8f0" : lState.stage === 1 ? "#fef08a" : lState.stage === 2 ? C.accent : C.green,
-                              color: lState.stage === 0 ? "#94a3b8" : lState.stage === 1 ? "#854d0e" : "#fff",
-                              boxShadow: lState.stage === 2 ? `0 4px 0 ${C.accentHover}` : lState.stage === 3 ? "0 0px 0 transparent" : "none",
-                              transform: lState.stage === 3 ? "translateY(4px)" : "translateY(0)"
+                              background: isVerified ? C.green : C.card,
+                              color: isVerified ? "#fff" : C.textSec,
+                              boxShadow: C.shadow
                             }}>
-                            {lState.stage === 0 ? "Verifierad?" : lState.stage === 1 ? `Vänta ${lState.timer}s...` : lState.stage === 2 ? "Verifierad?" : "Verifierad ✓"}
+                            {isVerified ? "Verifierad ✓" : "Verifierad?"}
                           </button>
                         </div>
                       )}
                       <div>
                         <div style={{fontSize:10,color:C.muted,fontFamily:C.mono,marginBottom:4,textTransform:"uppercase",letterSpacing:"0.04em",fontWeight:500}}>Archive.today länk #{li+1}</div>
                         <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
-                          <a href={lk.archiveUrl} target="_blank" rel="noopener noreferrer" style={{color:C.red,fontSize:12,wordBreak:"break-all",fontFamily:C.mono,fontWeight:500, textDecoration: lState.stage === 3 ? "line-through" : "none"}}>{lk.archiveUrl}</a>
+                          <a href={lk.archiveUrl} target="_blank" rel="noopener noreferrer" style={{color:C.red,fontSize:12,wordBreak:"break-all",fontFamily:C.mono,fontWeight:500, textDecoration: isVerified ? "line-through" : "none"}}>{lk.archiveUrl}</a>
                           <CopyButton text={lk.archiveUrl} label="Kopiera gammal URL"/>
                         </div>
                         {lk.originalUrl&&(<div style={{marginTop:6}}><span style={{color:C.mutedLight,fontSize:10,fontFamily:C.mono}}>Original → </span><a href={lk.originalUrl} target="_blank" rel="noopener noreferrer" style={{color:C.muted,fontSize:11,wordBreak:"break-all",fontFamily:C.mono}}>{lk.originalUrl}</a></div>)}
@@ -686,34 +660,41 @@ function ResultsView({results,done,showOnlyAffected=false}){
                     {lk.status==="pending"?<Pill variant="amber">Väntande</Pill>:lk.status==="found"?<Pill variant="green">Alternativ funnet</Pill>:lk.status==="notfound"?<Pill variant="red">Inget alternativ</Pill>:<Pill variant="muted">Kan inte extrahera</Pill>}
                   </div>
                   {lk.waybackUrl&&(
-                    <div style={{marginTop:10,padding:"10px 14px",background:C.greenSoft,borderRadius:C.radiusSm,border:`1px solid ${C.greenBorder}`,opacity:lState.stage === 3?0.5:1,transition:"opacity 0.2s"}}>
+                    <div style={{marginTop:10,padding:"10px 14px",background:C.greenSoft,borderRadius:C.radiusSm,border:`1px solid ${C.greenBorder}`,opacity:isVerified?0.75:1,transition:"opacity 0.2s"}}>
                       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:6}}>
                         <div style={{flex:1,minWidth:0}}>
                           <div style={{fontSize:10,color:C.green,fontWeight:600,marginBottom:4,textTransform:"uppercase",letterSpacing:"0.04em"}}>
                             Wayback Machine-alternativ
-                            {!lState.editMode && lState.stage !== 3 && (
-                                <span onClick={()=>setLinkStates(p=>({...p, [id]: {...p[id], editMode:true}}))} style={{cursor:"pointer", marginLeft:8, fontSize:10, color:C.accent, textTransform:"none"}}>✏️ Redigera</span>
+                            {!lState.editMode && !isVerified && (
+                                <span onClick={()=>setLinkStates(p=>({...p, [id]: {...p[id], editMode:true, editValue: lState.customUrl || lk.waybackUrl}}))} style={{cursor:"pointer", marginLeft:8, fontSize:10, color:C.accent, textTransform:"none"}}>✏️ Redigera</span>
                             )}
                           </div>
                           
                           {lState.editMode ? (
                              <div style={{display:"flex", gap:6, marginTop:4, alignItems:"center"}}>
-                               <input id={`edit-${li}`} type="text" defaultValue={displayUrl} style={{flex:1, padding:"4px 8px", fontSize:12, borderRadius:4, border:`1px solid ${C.greenBorder}`}} />
-                               <input id={`edit-${encodeURIComponent(art.title)}-${li}`} type="text" defaultValue={displayUrl} style={{flex:1, padding:"4px 8px", fontSize:12, borderRadius:4, border:`1px solid ${C.greenBorder}`}} />
+                               <input 
+                                 type="text" 
+                                 value={lState.editValue !== undefined ? lState.editValue : displayUrl} 
+                                 onChange={e => {
+                                   const val = e.target.value;
+                                   setLinkStates(p => ({ ...p, [id]: { ...p[id], editValue: val } }));
+                                 }} 
+                                 style={{flex:1, padding:"4px 8px", fontSize:12, borderRadius:4, border:`1px solid ${C.greenBorder}`}} 
+                               />
                                <button onClick={()=>{
-                                  const val = document.getElementById(`edit-${encodeURIComponent(art.title)}-${li}`).value.trim();
+                                  const val = (lState.editValue !== undefined ? lState.editValue : displayUrl).trim();
                                   let newDate = null;
                                   const dMatch = val.match(/\/web\/(\d{14})/);
                                   if(dMatch) {
                                       const d = dMatch[1];
                                       newDate = `${d.substring(0,4)}-${d.substring(4,6)}-${d.substring(6,8)}`;
                                   }
-                                  setLinkStates(p=>({...p, [id]: {...p[id], editMode:false, customUrl:val, customDate:newDate, stage:0}}));
+                                  setLinkStates(p=>({...p, [id]: {...p[id], editMode:false, customUrl:val, customDate:newDate}}));
                               }} style={{padding:"4px 8px", background:C.accent, color:"#fff", border:"none", borderRadius:4, cursor:"pointer", fontSize:11, fontWeight:"bold"}}>Spara</button>
                                <button onClick={()=>setLinkStates(p=>({...p, [id]: {...p[id], editMode:false}}))} style={{padding:"4px 8px", background:"transparent", color:C.muted, border:"none", cursor:"pointer", fontSize:11}}>Avbryt</button>
                              </div>
                           ) : (
-                             <a href={displayUrl} target="_blank" rel="noopener noreferrer" onClick={()=>handleVerifyClick(id)} style={{color:C.green,fontSize:12,wordBreak:"break-all",fontFamily:C.mono,fontWeight:500}} title="Klicka för att öppna och verifiera denna ögonblicksbild">{displayUrl}</a>
+                             <a href={displayUrl} target="_blank" rel="noopener noreferrer" style={{color:C.green,fontSize:12,wordBreak:"break-all",fontFamily:C.mono,fontWeight:500}} title="Klicka för att öppna denna ögonblicksbild">{displayUrl}</a>
                           )}
 
                         </div>
@@ -729,7 +710,7 @@ function ResultsView({results,done,showOnlyAffected=false}){
                           <CopyButton text={displayDate} label="Kopiera datum" variant="green"/>
                         </div>
                       )}
-                      {lState.stage === 3 && (
+                      {isVerified && (
                         <div style={{marginTop:8,paddingTop:8,borderTop:`1px solid ${C.greenBorder}`}}>
                           <button onClick={()=>{
                             const st = linkStates[id] || {};
