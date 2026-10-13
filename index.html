@@ -282,7 +282,7 @@ async function executeMassEdit(title, originalWikitext, selectedLinks) {
     console.warn("Could not fetch fresh edit token, falling back:", e);
   }
 
-  const summary = `Ersätter ${replacedCount} archive.today-länk${replacedCount > 1 ? 'ar' : ''} med Wayback Machine-alternativ per [[Wikipedia:Arkivering]] (via [https://swedish-archive-today-detector.toolforge.org/ WP:Länkdetektor])`;
+  const summary = `Ersätter ${replacedCount} archive.today-länk${replacedCount > 1 ? 'ar' : ''} med Wayback Machine-alternativ per [[Wikipedia:Arkivering]] (via [https://swedish-archive-today-detector.toolforge.org])`;
 
   const form = document.createElement('form');
   form.method = 'POST';
