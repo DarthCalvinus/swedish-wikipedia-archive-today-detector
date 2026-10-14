@@ -117,7 +117,14 @@ async function checkWayback(o,retries=3){
       if(r.status===503&&attempt<retries){await new Promise(w=>setTimeout(w,1000*(attempt+1)));continue}
       if(!r.ok)return null;
       const d=await r.json();
-      return d.archived_snapshots?.closest?.available?d.archived_snapshots.closest.url:null;
+      let wbUrl = d.archived_snapshots?.closest?.available ? d.archived_snapshots.closest.url : null;
+      
+      // Force https:// for the Wayback Machine URL
+      if (wbUrl && wbUrl.startsWith("http://")) {
+        wbUrl = wbUrl.replace("http://", "https://");
+      }
+      
+      return wbUrl;
     }catch{if(attempt<retries){await new Promise(w=>setTimeout(w,1000*(attempt+1)));continue}return null}
   }
   return null;
@@ -282,7 +289,7 @@ async function executeMassEdit(title, originalWikitext, selectedLinks) {
     console.warn("Could not fetch fresh edit token, falling back:", e);
   }
 
-  const summary = `Ersätter 1 archive.today-länk med Wayback Machine-alternativ (via [[https://swedish-archive-today-detector.toolforge.org verktyg]])`;
+  const summary = `Ersätter ${replacedCount} archive.today-länk${replacedCount > 1 ? 'ar' : ''} med Wayback Machine-alternativ (via https://swedish-archive-today-detector.toolforge.org)`;
 
   const form = document.createElement('form');
   form.method = 'POST';
