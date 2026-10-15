@@ -232,13 +232,13 @@ async function executeMassEdit(title, originalWikitext, selectedLinks) {
           const dateRegex = /(\|\s*(?:archive-?date|arkivdatum)\s*=)[^|}]*/i;
 
           if (dateRegex.test(updatedBlock)) {
-            updatedBlock = updatedBlock.replace(dateRegex, `$1 ${link.waybackDate}`);
+            updatedBlock = updatedBlock.replace(dateRegex, `$1${link.waybackDate}`);
           } else {
             const afterArchiveUrl = /(\|\s*(?:archive-?url|arkivurl)\s*=[^|}]*)/i;
             if (afterArchiveUrl.test(updatedBlock)) {
               updatedBlock = updatedBlock.replace(
                 afterArchiveUrl,
-                `$1 |arkivdatum=${link.waybackDate}`
+                `$1|arkivdatum=${link.waybackDate}`
               );
             }
           }
@@ -279,7 +279,7 @@ async function executeMassEdit(title, originalWikitext, selectedLinks) {
               if (afterArchiveUrl.test(newText)) {
                 newText = newText.replace(
                   afterArchiveUrl,
-                  `$1 |arkivdatum=${link.waybackDate}`
+                  `$1|arkivdatum=${link.waybackDate}`
                 );
               }
             }
