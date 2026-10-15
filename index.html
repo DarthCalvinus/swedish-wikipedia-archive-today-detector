@@ -110,13 +110,22 @@ function extractOriginalUrl(archiveUrl, wikitext) {
   return match[1];
 }
 
-async function checkWayback(o,retries=3){
-  for(let attempt=0;attempt<=retries;attempt++){
-    try{
-      const r=await fetch(`https://archive.org/wayback/available?url=${encodeURIComponent(o)}`);
-      if(r.status===503&&attempt<retries){await new Promise(w=>setTimeout(w,1000*(attempt+1)));continue}
-      if(!r.ok)return null;
-      const d=await r.json();
+async function checkWayback(o, timestamp = "", retries = 3) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      // Append timestamp parameter if available to get the closest snapshot to that date
+      let apiUrl = `https://archive.org/wayback/available?url=${encodeURIComponent(o)}`;
+      if (timestamp) {
+        apiUrl += `&timestamp=${timestamp}`;
+      }
+
+      const r = await fetch(apiUrl);
+      if (r.status === 503 && attempt < retries) {
+        await new Promise(w => setTimeout(w, 1000 * (attempt + 1)));
+        continue;
+      }
+      if (!r.ok) return null;
+      const d = await r.json();
       let wbUrl = d.archived_snapshots?.closest?.available ? d.archived_snapshots.closest.url : null;
       
       // Force https:// for the Wayback Machine URL
@@ -125,7 +134,13 @@ async function checkWayback(o,retries=3){
       }
       
       return wbUrl;
-    }catch{if(attempt<retries){await new Promise(w=>setTimeout(w,1000*(attempt+1)));continue}return null}
+    } catch {
+      if (attempt < retries) {
+        await new Promise(w => setTimeout(w, 1000 * (attempt + 1)));
+        continue;
+      }
+      return null;
+    }
   }
   return null;
 }
@@ -485,7 +500,13 @@ function useScanEngine(){
       if(links.length>0){newHits++;affectedCount.current++}
       const artResult={title,wikitext,links:[...links]};setResults(p=>[...p,artResult]);
       for(let li=0;li<links.length;li++){if(abort.current)break;const lk=links[li];
-        if(lk.originalUrl){setProgress(`Skannar ${append?"(utökad) ":""}${ti+1} av ${titles.length}: ${title} — Wayback (${li+1}/${links.length})`);const wb=await checkWayback(lk.originalUrl);lk.waybackUrl=wb;lk.waybackDate=extractWaybackDate(wb);lk.status=wb?"found":"notfound"}else{lk.status="noextract"}
+        if(lk.originalUrl){setProgress(`Skannar ${append?"(utökad) ":""}${ti+1} av ${titles.length}: ${title} — Wayback (${li+1}/${links.length})`)
+let targetTimestamp = "";
+const tsMatch = lk.archiveUrl.match(/\/(\d{8,14})\//);
+if (tsMatch && tsMatch[1]) {
+  targetTimestamp = tsMatch[1];
+}
+const wb = await checkWayback(lk.originalUrl, targetTimestamp);lk.waybackUrl=wb;lk.waybackDate=extractWaybackDate(wb);lk.status=wb?"found":"notfound"}else{lk.status="noextract"}
         setResults(p=>{const u=[...p];const idx=u.findIndex(r=>r.title===title);if(idx!==-1)u[idx]={...artResult,links:[...links]};return u});await new Promise(r=>setTimeout(r,300))}
       links.forEach(l=>{if(l.status==="pending")l.status="noextract"});
       setResults(p=>{const u=[...p];const idx=u.findIndex(r=>r.title===title);if(idx!==-1)u[idx]={...artResult,links:[...links]};return u})
